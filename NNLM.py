@@ -32,14 +32,16 @@ class NNLM(nn.Module):
         X=X.view(-1,n_step*m)
         tanh=torch.tanh(self.d+self.H(X))
         output=self.b+self.W(X)+self.U(tanh)
-        
+        return output
+    
+    
 if __name__=='__main__':
     n_step=2
     n_hidden=2
     m=2
-    sentences=["i Love You","I LIKE YOU","I MISS YOU"]
+    sentences=["i love you","i like me","i miss py"]
     
-    word_list="".join(sentences).split()
+    word_list=" ".join(sentences).split()
     word_list=list(set(word_list))
     word_dict={w: i for i ,w in enumerate(word_list)}
     number_dict={i: w for i, w in enumerate(word_list)}
@@ -47,10 +49,11 @@ if __name__=='__main__':
     
     model=NNLM()
     
+    
     criterion=nn.CrossEntropyLoss()
     optimizer=optim.Adam(model.parameters(),lr=0.001)
     
-    input_batch,target_batch=make_batch
+    input_batch,target_batch=make_batch()
     input_batch=torch.LongTensor(input_batch)
     target_batch=torch.LongTensor(target_batch)
     
@@ -65,6 +68,6 @@ if __name__=='__main__':
             optimizer.step()
             
     predict=model(input_batch).data.max(1,keepdim=True)[1]
-    print([sen.split()[:2] for sen in sentences], '->', [number_dict[n.item()] for n in predict.sqeeze()])
+    print([sen.split()[:2] for sen in sentences], '->', [number_dict[n.item()] for n in predict.squeeze()])
     
     
